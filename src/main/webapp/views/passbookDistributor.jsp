@@ -43,6 +43,7 @@
    </body>
    <script>
       $(document).ready(function() {
+          $("#reports").addClass("active");
     	  var userId = $("#userSessionId").val();
     	  if(userId == ""){
 					alert("session is expired");
@@ -50,10 +51,26 @@
         	  }
     	  console.log(userId);         	  
           	$.get("http://localhost:8081/userApi/getUserAccountBalance/"+userId, function(data, status){
-          		$("#userBalanceDisplay").html(data+ " &#8377;");
-          		$("#userBalance").html(data+ " &#8377;");      		
+          		$("#userBalanceDisplay").html(data.toFixed(2)+ " &#8377;");
+          		$("#userBalance").html(data.toFixed(2)+ " &#8377;");      		
             });
-
+            
+          	$.get("http://localhost:8081/userApi/getUserById/"+userId, function(data, status){
+              	console.log(data);
+              	var userName;
+              	var roleName;
+              	for(var key in data)
+                  	{
+                  	var keyData = data[key];
+              		for(var value in keyData){
+              			userName = keyData[1];
+                      	roleName = keyData[9];              		
+                  		}
+                    }
+                $("#userName").text(userName);
+                $("#roleName").text(roleName);      		
+            });
+            
           	$.fn.dataTable.moment( 'h:mm:ss A');
       		$('#userPassbook').DataTable({
       		"aaSorting": [],

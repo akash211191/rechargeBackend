@@ -39,7 +39,7 @@ public class TransactionController {
 	    double initialVirtualBalance = userTransactionDto.getVirtualBalance();
 	    double initialAmount = userTransactionDto.getUserAmount();	    
 	    double initialTotalAmount = initialAmount + initialVirtualBalance;
-	    double totalAmount = amount + virtualBalance;
+	    double totalAmount = virtualBalance;
 		  try { 
 			  boolean checkValidPin = userService.checkValidPin(transactionPin);  /* true */			  
 			  if(checkValidPin) {				  
@@ -50,14 +50,14 @@ public class TransactionController {
 					    	newTransactionType = "Credit";
 					    	amount = -amount;
 					    	virtualBalance = -virtualBalance;
-					    	totalAmount = amount + virtualBalance;
+					    	totalAmount = virtualBalance;
 					    	newDescription = initialTotalAmount+" debited from "+userTransactionDto.getUserName();
 					    }
 					    if(transactionType.equals("Credit") && sessionUserId != userTransactionDto.getUserId()) {
 					    	newTransactionType = "Debit";
 					    	amount = -amount;
 					    	virtualBalance = -virtualBalance;
-					    	totalAmount = amount + virtualBalance;
+					    	totalAmount = virtualBalance;
 					    	newDescription = initialTotalAmount+" credited to "+userTransactionDto.getUserName();
 					    }
 					    double adminUserBalance = userService.getUserAccountBalance(sessionUserId);  /* 0 */
@@ -140,6 +140,7 @@ public class TransactionController {
 				  newUserTransactionDto.setUserId(getMasterUserId);
 			      newUserTransactionDto.setTransactionType("Credit");
 			      newUserTransactionDto.setUserAmount(userTransactionDto.getVirtualBalance());
+			      newUserTransactionDto.setVirtualBalance(userTransactionDto.getVirtualBalance());
 			      balanceService.saveUserTransaction(newUserTransactionDto);  
 			      response = new ResponseEntity<>("Transaction Done",HttpStatus.OK);
 			  } else if( userTransactionDto.getUserId() == adminUserId) {
@@ -181,8 +182,8 @@ public class TransactionController {
 					  response = new ResponseEntity<>("Recharge Failed",HttpStatus.OK);					  
 				  }
 				  else {
-					  balanceService.saveRechargeTransaction(rechargeTransaction);
-					  response = new ResponseEntity<>(rechargeTransaction.getRechargeTransactionId(),HttpStatus.OK);					    
+					  RechargeTransaction newRt =  balanceService.saveRechargeTransaction(rechargeTransaction);
+					  response = new ResponseEntity<>(newRt.getRechargeTransactionId(),HttpStatus.OK);					    
 				  }
 				  } else { 				 
 				 response = new ResponseEntity<>("Insufficient Balance ",HttpStatus.OK); 

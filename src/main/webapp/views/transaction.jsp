@@ -136,19 +136,17 @@
 					var userAmount =  $("#user_amount_actual").val();
 					var initialUserAmount =  Number($("#user_amount_actual").val());
 					var transactionType = $("#transaction_type_actual").val();
-					var virtualBalance = Number($("#virtual_balance").val());
-					var totalBalance = initialUserAmount + virtualBalance;
 					console.log(transactionType);
 					var userName = $("#user_id_actual option:selected").text();
 					var description;
 					if(transactionType == "Debit")
 						{
 						 userAmount = -Math.abs(userAmount);
-						 	description = totalBalance+"debited by "+sessionUserName;
+						 	description = userAmount+"debited by "+sessionUserName;
 						}
 					if(transactionType == "Credit")
 						{
-							description = totalBalance+" credited by "+sessionUserName;
+							description = userAmount+" credited by "+sessionUserName;
 						}
 						console.log(userAmount);					
 						 var formData = {
@@ -158,7 +156,8 @@
 						      transactionType: transactionType,
 						      description: description,
 						      sessionUserId: sessionUserId,
-						      userName: userName
+						      userName: userName,
+						      virtualBalance: userAmount
 						    };
 							var requestJSON = JSON.stringify(formData);
 							console.log(requestJSON);

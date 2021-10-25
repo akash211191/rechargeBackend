@@ -23,6 +23,8 @@ public class BalanceInfoDaoImpl implements BalanceInfoDao{
 	@Autowired 
 	SessionFactory sessionFactory;
 	
+	@Autowired
+	UserDaoImpl userDaoImpl;
 	
 	@Override
 	@Transactional
@@ -72,7 +74,7 @@ public class BalanceInfoDaoImpl implements BalanceInfoDao{
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		return rechargeTransaction; 
+		return newRechargeTransaction; 
 	}
 
 	@Override
@@ -80,9 +82,16 @@ public class BalanceInfoDaoImpl implements BalanceInfoDao{
 	public Iterable<BalanceInfo> getUserPassbook(int userId) {
 		Session session = this.sessionFactory.getCurrentSession();
 		Iterable<BalanceInfo> userPassbook = null;
+		int adminUserId = userDaoImpl.getAdminUser(userId);		
 		try {
-			Query query = session.getNamedNativeQuery("BalanceInfo.getUserPassbook").setParameter("userId", userId);
-			userPassbook = query.list();
+			if(userId != adminUserId) {
+				Query query = session.getNamedNativeQuery("BalanceInfo.getUserPassbook").setParameter("userId", userId);
+				userPassbook = query.list();	
+			}
+			else {
+				Query query = session.getNamedNativeQuery("BalanceInfo.getAdminUserPassbook").setParameter("userId", userId);
+				userPassbook = query.list();
+			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

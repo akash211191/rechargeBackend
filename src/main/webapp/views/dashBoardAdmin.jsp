@@ -24,7 +24,9 @@
 					<div class = "col-lg-12">
 				          <div class = "rechargeBoxHeader"  style = "background-color:#FFF;">
 				            <ul id="menu" style = "margin-top:13px">
-				              <li><a id = "rechargeMenu">Live Recharges</a></li>
+				              <li><a id = "rechargeMenu">Live Recharges</a>
+				              	<img id = "loadingImage" src = "/images/loading.gif" style = "width:5%"/>
+				              </li>
 				            </ul>
 				          </div>
 				          <div class = "recentRecharge" id = "recentRecharge"  style = "background-color:#FFF;padding:0px !important">
@@ -114,11 +116,15 @@
 		}
 		]
 		});
-
+		$("#loadingImage").show();
 		 setInterval( function () {
+			$("#loadingImage").hide();
+			setInterval( function () {
+				$("#loadingImage").show();
+			},22000);
 			console.log(table);
 		    table.ajax.reload();
-		}, 30000 );
+		}, 25000 );
     });
 
     </script>

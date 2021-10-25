@@ -26,7 +26,7 @@
    <div class = "row">
       <div class = "col-md-12">
          <div class = "rechargeBoxHeader"  style = "background-color:#FFF;padding:1%;border:1px solid rgba(0, 40, 100, 0.12)">
-         Transaction
+         <b>Funds Transfer</b>
          </div>
             <div class = "box_content" style = "background-color:#FFF;padding:3%;border:1px solid rgba(0, 40, 100, 0.12)">
                <form >                   
@@ -59,6 +59,7 @@
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script>
 	$(document).ready(function() {
+	$("#funds").addClass("active");	
 	  $('#user_id').select2();
 	//start of user form submit
 	  var sessionUserId = $("#userSessionId").val();
@@ -66,6 +67,21 @@
 					alert("session is expired");
 					window.location.replace("http://localhost:8081/Recharge/login");
       	  }
+  	$.get("http://localhost:8081/userApi/getUserById/"+sessionUserId, function(data, status){
+      	console.log(data);
+      	var userName;
+      	var roleName;
+      	for(var key in data)
+          	{
+          	var keyData = data[key];
+      		for(var value in keyData){
+      			userName = keyData[1];
+              	roleName = keyData[9];              		
+          		}
+            }
+        $("#userName").text(userName);
+        $("#roleName").text(roleName);      		
+    });
   	console.log(sessionUserId);         	  
 	var userBalance = 0;
 	var sessionUserName;

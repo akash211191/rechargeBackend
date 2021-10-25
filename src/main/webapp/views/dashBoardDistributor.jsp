@@ -82,6 +82,7 @@
   <script type="text/javascript" src="/js/jquery.min.js"></script>
   <script>
     $(document).ready(function() {    
+        $("#home").addClass("active");
       var userId = $("#userSessionId").val();		
       console.log(userId);         	  
       	$.get("http://localhost:8081/userApi/getUserAccountBalance/"+userId, function(data, status){

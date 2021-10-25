@@ -119,6 +119,7 @@
    </body>
    <script>
       $(document).ready(function() {
+          $("#manageUsers").addClass("active");
     	  var userId = $("#userSessionId").val();
     	  if(userId == ""){
 					alert("session is expired");
@@ -129,7 +130,21 @@
           		$("#userBalanceDisplay").html(data.toFixed(2)+ " &#8377;");
           		$("#userBalance").html(data.toFixed(2)+ " &#8377;");      		
             });
-
+          	$.get("http://localhost:8081/userApi/getUserById/"+userId, function(data, status){
+              	console.log(data);
+              	var userName;
+              	var roleName;
+              	for(var key in data)
+                  	{
+                  	var keyData = data[key];
+              		for(var value in keyData){
+              			userName = keyData[1];
+                      	roleName = keyData[9];              		
+                  		}
+                    }
+                $("#userName").text(userName);
+                $("#roleName").text(roleName);      		
+            });
           	$.fn.dataTable.moment( 'h:mm:ss A');
       		$('#userList').DataTable({
       		pageLength : 10,

@@ -24,13 +24,31 @@ import org.hibernate.annotations.NamedNativeQuery;
 			         		"	   t2.created_date from " + 
 			         		" (select t.balance_id," + 
 			         		"		t.transaction_type,	" + 
-			         		" (select COALESCE(sum(amount+virtual_balance),0) from Tbl_Balance_Info t1 where t1.created_date < t.created_date and t1.user_id =:userId) as previous_balance, " +
-			         	    " (t.amount + t.virtual_balance) as amount, " +
+			         		" (select COALESCE(sum(virtual_balance),0) from Tbl_Balance_Info t1 where t1.created_date < t.created_date and t1.user_id =:userId) as previous_balance, " +
+			         	    " (t.virtual_balance) as amount, " +
 			         		"	   t.description," + 
 			         		"	   t.created_date" + 
 			         		" from Tbl_Balance_Info t where t.user_id =:userId" + 
 			         		" ) t2" + 
-			         		" order by t2.created_date desc"),
+			         		" where t2.amount != 0 order by t2.created_date desc"),
+	
+	@NamedNativeQuery(name = "BalanceInfo.getAdminUserPassbook", 
+    query = "select t2.balance_id as passbook_id," + 
+    		"	   t2.transaction_type," + 
+    		"	   t2.previous_balance," + 
+    		"	   t2.amount," + 
+    		"	   (t2.previous_balance + t2.amount) as new_balance," + 
+    		"	   t2.description," + 
+    		"	   t2.created_date from " + 
+    		" (select t.balance_id," + 
+    		"		t.transaction_type,	" + 
+    		" (select COALESCE(sum(amount),0) from Tbl_Balance_Info t1 where t1.created_date < t.created_date and t1.user_id =:userId) as previous_balance, " +
+    	    " (t.amount) as amount, " +
+    		"	   t.description," + 
+    		"	   t.created_date" + 
+    		" from Tbl_Balance_Info t where t.user_id =:userId" + 
+    		" ) t2" + 
+    		" where t2.amount != 0 order by t2.created_date desc"),
 	
 	@NamedNativeQuery(name = "BalanceInfo.rechargeReport", 
     query = " select " + 
@@ -73,9 +91,9 @@ import org.hibernate.annotations.NamedNativeQuery;
     		"	   rt.api_transaction_id," + 
     		"	   rt.op_id," + 
     		"	   rt.status," + 
-    		"	  (t2.previous_balance +t2.virtual_balance) as new_balance" + 
+    		"	  (t2.previous_balance + t2.virtual_balance) as new_balance" + 
     		"			from     		 (select (select COALESCE(sum(virtual_balance),0) from Tbl_Balance_Info t1 " + 
-    		"							 where t1.created_date < t.created_date) as previous_balance,  " + 
+    		"							 where t1.created_date < t.created_date and t1.user_id = t.user_id) as previous_balance,  " + 
     		"			         	     (t.virtual_balance) as virtual_balance, " + 
     		"			         			   t.created_date," + 
     		"								   t.recharge_transaction_id" + 

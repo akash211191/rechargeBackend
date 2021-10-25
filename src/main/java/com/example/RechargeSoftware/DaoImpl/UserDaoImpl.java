@@ -194,10 +194,19 @@ public class UserDaoImpl implements UserDao {
 		// TODO Auto-generated method stub
 		Session session = this.sessionFactory.getCurrentSession();
 		double amount = 0;
-		try {			
-			List<User> user = session.getNamedNativeQuery("User.getUserAccountBalance").setParameter("userId", userId).list();
-			Iterator it = user.iterator();
-			amount = (double) it.next();	
+		try {
+			int adminUserId = getAdminUser(userId);
+			if(userId != adminUserId) {
+				List<User> user = session.getNamedNativeQuery("User.getUserAccountBalance").setParameter("userId", userId).list();
+				Iterator it = user.iterator();
+				amount = (double) it.next();	
+			}
+			else {
+				List<User> user = session.getNamedNativeQuery("User.getAdminUserAccountBalance").setParameter("userId", userId).list();
+				Iterator it = user.iterator();
+				amount = (double) it.next();
+			}
+				
 		} catch(Exception e) {
 			e.printStackTrace();
 		}				

@@ -44,7 +44,8 @@ import org.hibernate.annotations.NamedNativeQuery;
 			"	join Tbl_User_Role_Mapper urm on u.user_id = urm.user_id" + 
 			"	join Tbl_Role r on r.role_id = urm.role_id" + 
 			"	where u.user_mobile = :userMobile"),
-	@NamedNativeQuery(name = "User.getUserAccountBalance", query = "select COALESCE(sum(amount+virtual_balance), '0.00') from Tbl_Balance_Info where user_id =:userId"),
+	@NamedNativeQuery(name = "User.getUserAccountBalance", query = "select COALESCE(sum(virtual_balance), '0.00') from Tbl_Balance_Info where user_id =:userId"),
+	@NamedNativeQuery(name = "User.getAdminUserAccountBalance", query = "select COALESCE(sum(amount), '0.00') from Tbl_Balance_Info where user_id =:userId"),
 	@NamedNativeQuery(name = "User.creditCommissionToUser", query = "with res1 as (select user_id,"  
 						+ " under_user_id," 
 						+ "	scheme_id"
