@@ -11,7 +11,7 @@ import org.hibernate.annotations.NamedNativeQueries;
 import org.hibernate.annotations.NamedNativeQuery;
 
 @NamedNativeQueries({
-	@NamedNativeQuery(name = "Role.getAllRoleListExceptAdmin", query = "select * from Tbl_Role ")
+	@NamedNativeQuery(name = "Role.getAllRoleListExceptAdmin", query = "select * from Tbl_Role where role_name != 'Admin'")
 })
 
 @Entity

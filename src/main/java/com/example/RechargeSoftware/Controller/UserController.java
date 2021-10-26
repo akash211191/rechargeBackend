@@ -128,9 +128,9 @@ public class UserController {
 		return new ResponseEntity<>(userName,HttpStatus.OK);	
 	}
 	
-	@RequestMapping("/getAllUserList")
-	public ResponseEntity<java.util.List<User>> getAllUserList(){
-		List<User> userList = userService.getAllUserListExceptAdmin();
+	@RequestMapping("/getAllUserList/{roleId}")
+	public ResponseEntity<java.util.List<User>> getAllUserList(@PathVariable int roleId){
+		List<User> userList = userService.getAllUserListExceptAdmin(roleId);
 		return new ResponseEntity<>(userList,HttpStatus.OK);	
 	}
 	
@@ -138,6 +138,12 @@ public class UserController {
 	public ResponseEntity<java.util.List<User>> getAllUnderUserList( @PathVariable int userId){
 		List<User> userList = userService.getAllUnderUserList(userId);
 		return new ResponseEntity<>(userList,HttpStatus.OK);	
+	}
+	
+	@RequestMapping("/getAdminPin/{userMobile}")
+	public ResponseEntity<Object> getAdminPin( @PathVariable String userMobile){
+		int pin = userService.getAdminPin(userMobile);
+		return new ResponseEntity<>(pin,HttpStatus.OK);	
 	}
 
 	

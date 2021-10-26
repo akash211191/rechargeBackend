@@ -149,9 +149,9 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	@Transactional
-	public List<User> getAllUserListExceptAdmin() {
+	public List<User> getAllUserListExceptAdmin(int roleId) {
 	  	Session session = this.sessionFactory.getCurrentSession();
-		Query query = session.getNamedNativeQuery("User.getUserAllUserListExceptAdmin");
+		Query query = session.getNamedNativeQuery("User.getUserAllUserListExceptAdmin").setParameter("roleId", roleId);
 		List<User> userList = query.list();
 		return userList;
 	}
@@ -349,5 +349,17 @@ public class UserDaoImpl implements UserDao {
 			e.printStackTrace();
 		}				
 		return id;
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	@Transactional
+	public int getAdminPin(String userMobile) {
+	  	Session session = this.sessionFactory.getCurrentSession();
+		Query query = session.getNamedNativeQuery("User.getAdminPin").setParameter("userMobile", userMobile);
+		List<User> userList = query.list();
+		Iterator it = userList.iterator();
+		int pin = (int) it.next();
+		return pin;
 	}
 }

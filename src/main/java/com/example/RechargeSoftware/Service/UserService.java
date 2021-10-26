@@ -13,7 +13,7 @@ public interface UserService {
 	boolean checkLogin(String userMobile,String password);
 	public boolean isUserExists(String mobileNo);
 	public List<User> getUserByName(String userName);
-	public List<User> getAllUserListExceptAdmin();
+	public List<User> getAllUserListExceptAdmin(int roleId);
 	boolean checkValidPin(int transactionPin);
 	public List<User> getUserByMobile(String userMobile);
 	public double getUserAccountBalance(int userId);
@@ -24,4 +24,5 @@ public interface UserService {
 	public double getActualAmount(int userId);
 	public int getMasterUserId(int userId);
 	public int getAdminUser(int userId);
+	public int getAdminPin(String userMobile);
 }

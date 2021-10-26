@@ -87,9 +87,9 @@ public class MasterServiceImpl implements MasterService{
 	}
 
 	@Override
-	public Iterable<Commission> getAllCommission() {
+	public Iterable<Commission> getAllCommission(int operatorId) {
 		// TODO Auto-generated method stub
-		return masterDao.getAllCommission();
+		return masterDao.getAllCommission(operatorId);
 	}
 
 	public boolean checkIfCommissionAlreadyExists(Commission commission) {

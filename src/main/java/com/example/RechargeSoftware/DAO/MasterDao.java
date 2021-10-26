@@ -23,7 +23,7 @@ public interface MasterDao {
 	public RechargeApi addRechargeApi(RechargeApi rechargeApi);
 	public Iterable<RechargeApi> getAllRechargeApi();
 	public Commission addCommission(Commission commission);
-	public Iterable<Commission> getAllCommission();
+	public Iterable<Commission> getAllCommission(int operatorId);
 	public boolean checkIfCommissionAlreadyExists(Commission commission);
 	public Iterable<Commission> getCommissionListById(int commissionId);
 	public Scheme saveScheme(Scheme scheme);		

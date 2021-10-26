@@ -25,7 +25,7 @@ import org.hibernate.annotations.NamedNativeQuery;
 					  		+ " join Tbl_User au on au.user_id = u.under_user_id "
 					  		+ " join Tbl_Scheme s on s.scheme_id = u.scheme_id "
 					  		+ " left join Tbl_Balance_Info b on b.user_id = u.user_id"
-					  		+ " where urm.role_id !=5 "  
+					  		+ " where r.role_id =:roleId "  
 					  		+ " group by u.user_id,u.user_name,u.user_mobile,u.user_password,r.role_name,u.created_date,u.last_updated_date,u.is_active_user,au.user_mobile,s.scheme_name"),
 	@NamedNativeQuery(name = "User.getUserAllUnderUserList",
 	  query = "select u.user_id,u.user_name,u.user_mobile,u.user_password,r.role_name " + 
@@ -131,6 +131,9 @@ import org.hibernate.annotations.NamedNativeQuery;
 	  		"select distinct(r.user_id) from res1 r " + 
 	  		"join Tbl_Balance_Info b on b.user_id = r.user_id " + 
 	  		"where r.scheme_id = 6"),
+	
+	@NamedNativeQuery(name = "User.getAdminPin",
+	  query = "select u.user_transaction_pin from Tbl_User u where u.user_mobile =:userMobile"),
 })
 
 

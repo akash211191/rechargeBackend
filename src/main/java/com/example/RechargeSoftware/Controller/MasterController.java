@@ -196,10 +196,10 @@ public class MasterController {
 		return response;
 		}
 	
-	@GetMapping(value = "/getCommissionList", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Iterable<Commission>> getCommissioniList() {
+	@GetMapping(value = "/getCommissionList/{operatorId}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Iterable<Commission>> getCommissioniList(@PathVariable int operatorId) {
 		try {
-			return new ResponseEntity<Iterable<Commission>>(service.getAllCommission(), HttpStatus.OK);
+			return new ResponseEntity<Iterable<Commission>>(service.getAllCommission(operatorId), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<Iterable<Commission>>(HttpStatus.BAD_REQUEST);
 		}

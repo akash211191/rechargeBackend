@@ -186,8 +186,6 @@ public class ViewController {
 	public String manageUsers(Model model) {
 		List<Role> roleList = userService.getAllRoleListExceptAdmin();		
 		model.addAttribute("roleList", roleList);
-		List<User> userList = userService.getAllUserListExceptAdmin();		
-		model.addAttribute("userList", userList);
 		try {
 			int userId = (int) httpSession.getAttribute("userId");
 			} catch(Exception e) {

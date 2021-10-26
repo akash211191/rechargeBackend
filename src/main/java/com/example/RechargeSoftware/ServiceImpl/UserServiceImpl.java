@@ -47,9 +47,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> getAllUserListExceptAdmin() {
+	public List<User> getAllUserListExceptAdmin(int roleId) {
 		
-		return userDaoImpl.getAllUserListExceptAdmin();
+		return userDaoImpl.getAllUserListExceptAdmin(roleId);
 	}
 
 	@Override
@@ -116,6 +116,12 @@ public class UserServiceImpl implements UserService {
 	public int getAdminUser(int userId) {
 		// TODO Auto-generated method stub
 		return userDaoImpl.getAdminUser(userId);
+	}
+
+	@Override
+	public int getAdminPin(String userMobile) {
+		// TODO Auto-generated method stub
+		return userDaoImpl.getAdminPin(userMobile);
 	}
 	
 }

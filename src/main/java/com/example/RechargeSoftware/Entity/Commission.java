@@ -19,7 +19,8 @@ import org.hibernate.annotations.NamedNativeQuery;
 						"from " + 
 						"Tbl_Commission c join Tbl_Operator o on c.operator_id = o.operator_id " + 
 						"join Tbl_Recharge_Api rai on rai.recharge_api_id = c.recharge_api_id " + 
-						"join Tbl_Scheme s on s.scheme_id = c.scheme_id "),	
+						"join Tbl_Scheme s on s.scheme_id = c.scheme_id "
+						+ "where c.operator_id =:operatorId"),	
 	
 	@NamedNativeQuery(name = "Commission.getCommissionListById", 
     query = "select c.commission_id,o.operator_id,o.operator_name"

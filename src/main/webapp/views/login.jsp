@@ -4,12 +4,35 @@
         <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">  -->
         <title>Recharge Software</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">            
-        <link rel = 'stylesheet' type="text/css" href='/css/style.css' />
-		<link rel = 'stylesheet' type="text/css" href='/css/animate-custom.css'/>
-		<script src = '/js/bootstrap.js' type = 'javascript'></script>
-		<script  type="text/javascript" src="/js/jquery.min.js"></script>		
+	  <link href="/css/bootstrap.min.css" rel="stylesheet">
+      <script type="text/javascript" src="/js/jquery.min.js"></script>
+      <link href="/css/style.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+      <script src = "/js/bootstrap.bundle.min.js" type = "text/javascript"></script>
+      <script src = "/js/bootstrap.min.js" type = "text/javascript"></script>
+      <link href="/css/jquery.dataTables.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <script src="/js/jquery.dataTables.min.js" type="text/javascript"></script>	
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>	
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
     </head>
+    <style>
+    .jconfirm .jconfirm-box{
+    padding:0px;
+    }
+    .jconfirm-title-c{
+    	background-color:#2980b9;
+    	padding:8px;
+    	font-size:16px !important;
+    	line-height:14px !important;
+    	color:white;
+    	font-weight:bold;
+    	
+    }
+    .jconfirm-content{
+    padding:10px;
+    }
+    </style>
     <body>
      <div class="container" style = "margin-top:100px">
             <!-- Codrops top bar -->
@@ -36,21 +59,21 @@
 								<p>
 									<span id ="validationError"></span>
 								</p>
-                                <p class="change_link">
+                                <!-- <p class="change_link">
 									Not a member yet ?
 									<a href="register">Join us</a>
-								</p>
+								</p> -->
                             </form>
-                        </div>
+                        </div>                
                     </div>
                 </div>  
-            </section>
+            </section>              
         </div>
     </body>
     <script>
 	$(document).ready(function() {	
 	//start of login form validate
-
+	 $("#otpModal").show();
 	 $("#validateLogin").click(function (event) {
 		 if( $("#user_mobile").val() == "" || $("#user_password").val() == ""){
 				$("#validationError").html("User Name or Password is blank ").css("color", "red");
@@ -88,7 +111,53 @@
 								        }
 							      if(roleName == "Admin"){
 								      console.log("login to admin dashboard");
-								      window.location.href="http://localhost:8081/Recharge/dashBoardAdmin";
+								      $.confirm({
+								   	    title: 'Admin Pin',
+								   	    content: '' +
+								   	    '<form action="" class="formName">' +
+								   	    '<div class="form-group">' +
+								   	    '<label>Pin</label>' +
+								   	    '<input type="text" id = "user_pin" placeholder="Enter Pin" class="user_pin form-control" autocomplete = "off" required />' +
+								   	    '</div>' +
+								   	    '</form>',
+								   	    buttons: {
+								   	        formSubmit: {
+								   	            text: 'Submit',
+								   	            btnClass: 'btn-blue',
+								   	            action: function () {
+								   	               var pin = this.$content.find('.user_pin').val();
+								   	               var userMobile = $("#user_mobile").val();
+								   	           		if(!pin){
+							   	                    $.alert('Pin cannot be blank');
+							   	                    return false;
+							   	                	}
+								   	          	    $.get("http://localhost:8081/userApi/getAdminPin/"+userMobile, function(data, status){
+								     	      		var adminPin = data;
+								     	      		if(pin != adminPin){
+								   	                	$.alert('Invalid Pin');
+								   	                    return false;
+								   	 	                }	
+								     	      		else{
+								     	      			window.location.href="http://localhost:8081/Recharge/dashBoardAdmin";
+									     	      		}
+								     	       		 });
+								   	               								   	            }
+								   	        },
+								   	        cancel: function () {
+								   	            //close
+								   	        },
+								   	    },
+								   	    onContentReady: function () {
+								   	        // bind to events
+								   	        var jc = this;
+								   	        this.$content.find('form').on('submit', function (e) {
+								   	            // if the user submits the form by pressing enter in the field.
+								   	            e.preventDefault();
+								   	            jc.$$formSubmit.trigger('click'); // reference the button and click it
+								   	        });
+								   	    }
+								   	});
+								      
 								      } 
 							      if(roleName == "Distributor" || roleName == "Master Distributor"){
 								      console.log("login to admin dashboard");

@@ -14,7 +14,7 @@ public interface UserDao {
 	boolean isUserExists(String mobileNo);
 	public List<User> getUserByName(String userName);
 	public List<User> getUserByMobile(String userMobile);
-	public List<User> getAllUserListExceptAdmin();
+	public List<User> getAllUserListExceptAdmin(int roleId);
 	boolean checkValidPin(int transactionPin);
 	public double getUserAccountBalance(int userId);
 	public List<Role> getAllRoleListExceptAdmin();	
@@ -24,5 +24,5 @@ public interface UserDao {
 	public double getActualAmount(int userId);
 	public int getMasterUserId(int userId);
 	public int getAdminUser(int userId);
-	
+	public int getAdminPin(String userMobile);
 }

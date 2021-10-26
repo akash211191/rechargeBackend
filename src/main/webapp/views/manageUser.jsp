@@ -26,6 +26,14 @@
                <div class = "box_header">
                   User List
                </div>
+               <div class="form-group" style= "background-color:#FFF;padding:25px;">
+                     <select class="form-control" id="filter_role_id" style = "width:20%;">
+                    	<option value = "" selected>Select Role</option>	
+					    <c:forEach var="item" items="${roleList}">
+					        <option value="${item[0]}">${item[1]}</option>
+					    </c:forEach>
+					</select>
+                  </div>
                <div class = "recentRecharge" id = "recentRecharge"  style = "background-color:#FFF;padding:5px;" >
                   <div style = "overflow:auto">
                      <table id="userList" class="display" style="width: 100%"></table>
@@ -161,197 +169,201 @@
     	        });
           	$("#users").addClass("active");
     	    $.fn.dataTable.moment( 'h:mm:ss A');
-      		$('#userList').DataTable({
-      		pageLength : 10,
-      		ajax : {
-      			url : 'http://localhost:8081/userApi/getAllUserList',
-      			dataSrc : ''
-      		},
-      		columns : [ {
-      			title : 'Name',
-      			data : '1'
-      		}, {
-      			title : 'UserName',
-      			data : '2'
-      		}, {
-      			title : 'Password',
-      			data : '3'
-      		}, {
-      			title : 'UserType',
-      			data : '4'
-      		},  {
-      			title : 'CreatedDate',
-      			data : '5',
-      			render: (data,type,row) => {
-      				return moment(data).format('DD/MM/YYYY hh:mm:ss A');					
-          			}
-      		},  {
-      			title : 'LastUpdatedDate',
-      			data : '6',
-      			render: (data,type,row) => {
-      				return moment(data).format('DD/MM/YYYY hh:mm:ss A');					
-          			}
-      		},  {
-      			title : 'Parent',
-      			data : '8'
-      		},  {
-      			title : 'Scheme Name',
-      			data : '9'
-      		},{
-      			title : 'Balance',
-      			data : '10',
-      			render: $.fn.dataTable.render.number(',', '.', 2)
-      		}
-         	,{ 
-                  title: 'Status',
-                  data : '7',
-                  render: (data,type,row) => {
-                  	if(data == "Y"){
-      					return '<span id="statusButtonSuccess">Active</span>';
-      	            	}
-                  	else{
-                  		return '<span id="statusButtonWarning">DeActive</span>';
-      	            	}
-                  }
-               },
-      		{ 
-                  mData: '',
-                  data : '0',
-                  render: (data,type,row) => {		          
-                    return '<a id= "userEdit"  data-toggle="modal" data-target="#myModal" class = "btn"><i class="fa fa-edit"></i><span style = "display:none">'+data+'</span></a>';
-                  }
-               }
-      		]
-      		
-      	});
-      
-      	
-      	$('#userList').on('click', '#userEdit', function(){
-      		var userEditValue = $(this).text();
-       		var userName;
-       		var userUsername;
-       		var userPassword;
-       		var status;
-       		var keyData;
-       		var value;
-       		var roleId;
-       		var selectedSchemeId;
-       		$.get("http://localhost:8081/userApi/getUserById/"+userEditValue, function(data, status){
-        		console.log(data);
-        		for(var key in data){
-            		keyData = data[key];
-            		for( value in keyData){
-            			userId = userEditValue;
-            			userMobile = keyData[2];
-            			userPassword = keyData[3];
-            		    role_name = keyData[4];
-            		    parent = keyData[8];
-            		    scheme = keyData[9];
-            		    userName = keyData[1];
-            		    status = keyData[7];
-            		    userArea = keyData[11];
-            		    userAddress = keyData[12];
-            		    userPancard = keyData[13];
-            		    expiryDate = keyData[14];
-            		    userFirmName = keyData[15];
-            		    roleId = keyData[16];
-            		    selectedSchemeId = keyData[17];
-            		    userBalance = keyData[19];
-            		    uniqueUserId = keyData[18];
-            		    virtualBalance = keyData[20];
-        	      		}	      			
-            		}      
-        		$("#user_id").val(userId);		
-        		$("#user_user_name").val(userMobile);		      			
-                $("#user_password").val(userPassword);
-                $("#user_type").text(role_name);
-                $("#user_parent").text(parent);
-                $("#user_scheme").val(scheme);
-                $("#user_name").val(userName);
-                $("#status").val(status);
-                $("#user_area").val(userArea);
-                $("#user_address").val(userAddress);
-                $("#user_pancard").val(userPancard);
-                $("#expiry_date").text(expiryDate);
-                $("#user_firm_name").val(userFirmName);
-                $("#user_balance").html("Balance: "+userBalance.toFixed(2)+"&#8377;");
-                $("#virtual_balance").html("Virtual Balance: "+virtualBalance.toFixed(2)+"&#8377;");
-                $("#unique_user_id").html(uniqueUserId);
-              if(status == "Y"){
-              	$("#status").val("Active");
-              	$("#status").attr("checked",'checked');
-      	        }
-              else{
-              	$("#status").val("DeActive");
-      	        } 
-              $.get("http://localhost:8081/getSchemeForRole/"+roleId, function(data, status){
-                 var schemeId;
-                 var schemeName;
-                 var $select = $('<select class="form-control" id="scheme_id"></select>');
-                 var $option;
-          		 console.log(data);
-          		 for(var key in data){
-              		keyData = data[key];
-              		for( value in keyData){
-              			schemeId = keyData[0];
-              			schemeName = keyData[1]; 
-              			$option = $('<option value="' + schemeId + '">' + schemeName + '</option>');
-          	      		}
-              		$select.append($option);	              		      			
-              		}         	    
-				$("#schemeData").html($select);
-				$("#scheme_id").val(selectedSchemeId);
-				});
-        	  });
-      	  });
-      
-      	 $("#updateUser").click(function (event) {
-      			if( $("#user_name").val() == "" || $("#user_password").val() == "" || $("#status").val() == ""){
-      				$("#validationError").html("All Fields Are Compulsory").css("color", "red");
-      				} 
-      				else {
-      					var status = $("#status").val();
-      					 if ($("#status").prop("checked")) {
-      						status = "Y";
-      				    }
-      					 else{
-      						status = "N";
-          					 }      											
-      					 var formData = {
-      							    userId: $("#user_id").val(),
-			             			userMobile: $("#user_user_name").val(),
-			             			userPassword: $("#user_password").val(),
-			             		    schemeId: $("#scheme_id").val(),
-			             		    userName: $("#user_name").val(),
-			             		    isActiveUser: status,
-			             		    userArea: $("#user_area").val(),
-			             		    userAddress: $("#user_address").val(),
-			             		    userPancard: $("#user_pancard").val(),
-			             		    userFirmName: $("#user_firm_name").val()		     						      						      
-      						    };
-      							var requestJSON = JSON.stringify(formData);
-      							console.log(requestJSON);
-      						    $.ajax({
-      						      type: "POST",
-      						      url: "http://localhost:8081/userApi/addUser",
-      						      headers: {
-      						    	  "Content-Type" : "application/json"
-      						      },
-      						      data: requestJSON,
-      						      encode: true,
-      						    }).done(function (data) {
-      						      console.log(data);
-      						       if (data == "User updated successfully !!!"){							       
-      						    	 $("#validationError").html('<div class="alert alert-success"><strong>Success!"'+data+'"</strong></div>');
-      						    	setTimeout(function(){ window.location.reload();}, 1000);
-      						    	
-      							  } else {
-      								$("#validationError").html('<div class="alert alert-danger"><strong>Error! Issue while inserting</strong></div>');		
-      							  }		 
-      						    });
-      						    event.preventDefault(); 
-      					}		   
-      		 		 });      		
+    	    $("#filter_role_id").change(function(){
+        	    var roleId = $(this).val();
+    	    	$('#userList').DataTable({
+        	    	destroy: true,
+    	      		pageLength : 10,
+    	      		ajax : {
+    	      			url : 'http://localhost:8081/userApi/getAllUserList/'+roleId,
+    	      			dataSrc : ''
+    	      		},
+    	      		columns : [ {
+    	      			title : 'Name',
+    	      			data : '1'
+    	      		}, {
+    	      			title : 'UserName',
+    	      			data : '2'
+    	      		}, {
+    	      			title : 'Password',
+    	      			data : '3'
+    	      		}, {
+    	      			title : 'UserType',
+    	      			data : '4'
+    	      		},  {
+    	      			title : 'CreatedDate',
+    	      			data : '5',
+    	      			render: (data,type,row) => {
+    	      				return moment(data).format('DD/MM/YYYY hh:mm:ss A');					
+    	          			}
+    	      		},  {
+    	      			title : 'LastUpdatedDate',
+    	      			data : '6',
+    	      			render: (data,type,row) => {
+    	      				return moment(data).format('DD/MM/YYYY hh:mm:ss A');					
+    	          			}
+    	      		},  {
+    	      			title : 'Parent',
+    	      			data : '8'
+    	      		},  {
+    	      			title : 'Scheme Name',
+    	      			data : '9'
+    	      		},{
+    	      			title : 'Balance',
+    	      			data : '10',
+    	      			render: $.fn.dataTable.render.number(',', '.', 2)
+    	      		}
+    	         	,{ 
+    	                  title: 'Status',
+    	                  data : '7',
+    	                  render: (data,type,row) => {
+    	                  	if(data == "Y"){
+    	      					return '<span id="statusButtonSuccess">Active</span>';
+    	      	            	}
+    	                  	else{
+    	                  		return '<span id="statusButtonWarning">DeActive</span>';
+    	      	            	}
+    	                  }
+    	               },
+    	      		{ 
+    	                  mData: '',
+    	                  data : '0',
+    	                  render: (data,type,row) => {		          
+    	                    return '<a id= "userEdit"  data-toggle="modal" data-target="#myModal" class = "btn"><i class="fa fa-edit"></i><span style = "display:none">'+data+'</span></a>';
+    	                  }
+    	               }
+    	      		]
+    	      		
+    	      	});
+    	      
+    	      	
+    	      	$('#userList').on('click', '#userEdit', function(){
+    	      		var userEditValue = $(this).text();
+    	       		var userName;
+    	       		var userUsername;
+    	       		var userPassword;
+    	       		var status;
+    	       		var keyData;
+    	       		var value;
+    	       		var roleId;
+    	       		var selectedSchemeId;
+    	       		$.get("http://localhost:8081/userApi/getUserById/"+userEditValue, function(data, status){
+    	        		console.log(data);
+    	        		for(var key in data){
+    	            		keyData = data[key];
+    	            		for( value in keyData){
+    	            			userId = userEditValue;
+    	            			userMobile = keyData[2];
+    	            			userPassword = keyData[3];
+    	            		    role_name = keyData[4];
+    	            		    parent = keyData[8];
+    	            		    scheme = keyData[9];
+    	            		    userName = keyData[1];
+    	            		    status = keyData[7];
+    	            		    userArea = keyData[11];
+    	            		    userAddress = keyData[12];
+    	            		    userPancard = keyData[13];
+    	            		    expiryDate = keyData[14];
+    	            		    userFirmName = keyData[15];
+    	            		    roleId = keyData[16];
+    	            		    selectedSchemeId = keyData[17];
+    	            		    userBalance = keyData[19];
+    	            		    uniqueUserId = keyData[18];
+    	            		    virtualBalance = keyData[20];
+    	        	      		}	      			
+    	            		}      
+    	        		$("#user_id").val(userId);		
+    	        		$("#user_user_name").val(userMobile);		      			
+    	                $("#user_password").val(userPassword);
+    	                $("#user_type").text(role_name);
+    	                $("#user_parent").text(parent);
+    	                $("#user_scheme").val(scheme);
+    	                $("#user_name").val(userName);
+    	                $("#status").val(status);
+    	                $("#user_area").val(userArea);
+    	                $("#user_address").val(userAddress);
+    	                $("#user_pancard").val(userPancard);
+    	                $("#expiry_date").text(expiryDate);
+    	                $("#user_firm_name").val(userFirmName);
+    	                $("#user_balance").html("Balance: "+userBalance.toFixed(2)+"&#8377;");
+    	                $("#virtual_balance").html("Virtual Balance: "+virtualBalance.toFixed(2)+"&#8377;");
+    	                $("#unique_user_id").html(uniqueUserId);
+    	              if(status == "Y"){
+    	              	$("#status").val("Active");
+    	              	$("#status").attr("checked",'checked');
+    	      	        }
+    	              else{
+    	              	$("#status").val("DeActive");
+    	      	        } 
+    	              $.get("http://localhost:8081/getSchemeForRole/"+roleId, function(data, status){
+    	                 var schemeId;
+    	                 var schemeName;
+    	                 var $select = $('<select class="form-control" id="scheme_id"></select>');
+    	                 var $option;
+    	          		 console.log(data);
+    	          		 for(var key in data){
+    	              		keyData = data[key];
+    	              		for( value in keyData){
+    	              			schemeId = keyData[0];
+    	              			schemeName = keyData[1]; 
+    	              			$option = $('<option value="' + schemeId + '">' + schemeName + '</option>');
+    	          	      		}
+    	              		$select.append($option);	              		      			
+    	              		}         	    
+    					$("#schemeData").html($select);
+    					$("#scheme_id").val(selectedSchemeId);
+    					});
+    	        	  });
+    	      	  });
+    	      
+    	      	 $("#updateUser").click(function (event) {
+    	      			if( $("#user_name").val() == "" || $("#user_password").val() == "" || $("#status").val() == ""){
+    	      				$("#validationError").html("All Fields Are Compulsory").css("color", "red");
+    	      				} 
+    	      				else {
+    	      					var status = $("#status").val();
+    	      					 if ($("#status").prop("checked")) {
+    	      						status = "Y";
+    	      				    }
+    	      					 else{
+    	      						status = "N";
+    	          					 }      											
+    	      					 var formData = {
+    	      							    userId: $("#user_id").val(),
+    				             			userMobile: $("#user_user_name").val(),
+    				             			userPassword: $("#user_password").val(),
+    				             		    schemeId: $("#scheme_id").val(),
+    				             		    userName: $("#user_name").val(),
+    				             		    isActiveUser: status,
+    				             		    userArea: $("#user_area").val(),
+    				             		    userAddress: $("#user_address").val(),
+    				             		    userPancard: $("#user_pancard").val(),
+    				             		    userFirmName: $("#user_firm_name").val()		     						      						      
+    	      						    };
+    	      							var requestJSON = JSON.stringify(formData);
+    	      							console.log(requestJSON);
+    	      						    $.ajax({
+    	      						      type: "POST",
+    	      						      url: "http://localhost:8081/userApi/addUser",
+    	      						      headers: {
+    	      						    	  "Content-Type" : "application/json"
+    	      						      },
+    	      						      data: requestJSON,
+    	      						      encode: true,
+    	      						    }).done(function (data) {
+    	      						      console.log(data);
+    	      						       if (data == "User updated successfully !!!"){							       
+    	      						    	 $("#validationError").html('<div class="alert alert-success"><strong>Success!"'+data+'"</strong></div>');
+    	      						    	setTimeout(function(){ window.location.reload();}, 1000);
+    	      						    	
+    	      							  } else {
+    	      								$("#validationError").html('<div class="alert alert-danger"><strong>Error! Issue while inserting</strong></div>');		
+    	      							  }		 
+    	      						    });
+    	      						    event.preventDefault(); 
+    	      					}		   
+    	      		 		 });
+  		             	});      		      		
       });
       	
    </script>

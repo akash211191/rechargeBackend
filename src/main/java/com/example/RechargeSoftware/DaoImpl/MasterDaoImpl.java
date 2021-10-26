@@ -273,9 +273,9 @@ public class MasterDaoImpl implements MasterDao {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	@Transactional
-	public Iterable<Commission> getAllCommission() {
+	public Iterable<Commission> getAllCommission(int operatorId) {
 		Session session = this.sessionFactory.getCurrentSession();
-		Query query = session.getNamedNativeQuery("Commission.getAllCommission");
+		Query query = session.getNamedNativeQuery("Commission.getAllCommission").setParameter("operatorId", operatorId);
 		Iterable<Commission> commissionList = query.list(); 
 		return commissionList;
 	}

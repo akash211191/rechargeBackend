@@ -72,12 +72,21 @@
          </div>
       </div>
       <div class = "container">
-         <div style = "margin-top:40px"></div>
+         <div style = "margin-top:40px"></div>         
+         	
          <div class = "row">
             <div class = "col-lg-12">
                <div class = "box_header">
                   Commission List
                </div>
+               <div class="form-group" style= "background-color:#FFF;padding:25px;">
+                     <select class="form-control" id="filter_operator_id" style = "width:20%;">
+                    	<option value = "" selected>Select Operator</option>	
+					    <c:forEach var="item" items="${operatorList}">
+					        <option value="${item[0]}">${item[2]}</option>
+					    </c:forEach>
+					</select>
+                  </div>
                <div class = "recentRecharge" id = "recentRecharge"  style = "background-color:#FFF;padding:5px;" >
                	<div style = "overflow:auto">
                   <table id="commissionList" class="display" style="width: 100%;"></table>
@@ -146,14 +155,20 @@
       </div>
    </body>
    <script>
-      // we need for live transactions
-      /* $(document).ajaxStop(function(){
-         	window.location.reload();
-      }); */
+      
       $(document).ready(function() {
       	$("#customModal").hide();
       	//start of user form submit
-      
+      var sessionUserId = $("#userSessionId").val();
+	  var sessionUserName;
+      console.log(sessionUserId);         	  
+      	$.get("http://localhost:8081/userApi/getUserAccountBalance/"+sessionUserId, function(data, status){
+      		$("#userBalanceDisplay").html(data.toFixed(2)+ " &#8377;");	
+        });
+      	$.get("http://localhost:8081/userApi/getUserNameById/"+sessionUserId, function(data, status){
+      		sessionUserName = data;
+      		console.log(sessionUserName);
+        });
       
        $("#saveCommission").click(function (event) {
       		if( $("#commission").val() == ""){
@@ -180,7 +195,7 @@
       					      type: "POST",
       					      url: "http://localhost:8081/commissionApi/addCommission",
       					      headers: {
-      					    	  "Content-Type" : "application/json"
+      					    	  "Content-Type" : "application/json"	
       					      },
       					      data: requestJSON,
       					      encode: true,
@@ -202,113 +217,119 @@
       	   
       	  });
       //end of user form submit
-       $('#commissionList').DataTable({
-      		pageLength : 10,
-      		ajax : {
-      			url : 'http://localhost:8081/getCommissionList',
-      			dataSrc : ''
-      		},
-      		columns : [ { 
-                  title: 'Operator Name',
-                  data : '2',
-                  render: (data,type,row) => {	            	
-      					return '<span id="operatorValue">'+data+'</span>';
-                  }
-               }, {
-      			title : 'Api',
-      			data : '4'
-      		}, {
-      			title : 'Commission',
-      			data : '7',
-      		    render: $.fn.dataTable.render.number(',', '.', 2)
-      		}, {
-      			title : 'Scheme Type',
-      			data : '6'
-      		},			
-                 { 
-      	            mData: '',
-      	            data : '0',
-      	            render: (data,type,row) => {		          
-      	              return '<a id = "commissionEdit" data-toggle="modal" data-target="#myModal"  class = "btn"><i class="fa fa-edit"></i><span style = "display:none">'+data+'</span></a>';
-      	            }
-      	         }
-      		]
-      		
-      	});	 
-       $('#commissionList').on('click', '#commissionEdit', function(){
-      	        var commissionEditValue = $(this).text();
-      	 		var operatorId;
-      	 		var schemeId;
-      	 		var rechargeApiId;
-      	 		var commission;
-      	 		$.get("http://localhost:8081/getCommissionListById/"+commissionEditValue, function(data, status){
-            		console.log(data);
-            		for(var key in data){
-      	      		keyData = data[key];
-      	      		for( value in keyData){
-      		      		commissionId = commissionEditValue;
-      		      		operatorId = keyData[1];
-      	      			rechargeApiId = keyData[3];
-      	      		    schemeId = keyData[5];
-      	      		    commissionAmount = keyData[7];
-      		      		}	      			
-      	      		}      
-            		$("#selected_commission_id").val(commissionId);
-            		$("#selected_operator_id").val(operatorId).attr('disabled','disabled');		
-            		$("#selected_scheme_id").val(schemeId).attr('disabled','disabled');		      			
-      	        $("#selected_recharge_api_id").val(rechargeApiId).attr('disabled','disabled');	
-      	        $("#selected_commission").val(commissionAmount);		
-      	});
-      	});	
-      		$("#closeModal").click(function(){
-      			$("#customModal").hide();
-      			});
-      
-      		$("#updateCommission").click(function (event) {
-      					var status = $("#status").val();
-      					if(status == "Active"){
-      						status = "Y";
-      						}
-      					else
-      						{
-      							status = "N";
-      						}
-  						if($("#selected_scheme_id").val() == null){
-  						  $("#selectedValidationError").html('<div class="alert alert-danger"><strong>Error!Admin Commission cannot be edited </strong></div>').show().delay(2000).fadeOut();
-  	  						} else {
-  	  						var formData = {
-        							  commissionId: $("#selected_commission_id").val(),
-        		                      operatorId: $("#selected_operator_id").val(),							 
-        						      rechargeApiId: $("#selected_recharge_api_id").val(),
-        						      schemeId: $("#selected_scheme_id").val(),
-        						      commissionAmount:  $("#selected_commission").val()					      
-        						    };
-        							var requestJSON = JSON.stringify(formData);
-        							console.log(requestJSON);
-        						    $.ajax({
-        						      type: "POST",
-        						      url: "http://localhost:8081/commissionApi/updateCommission",
-        						      headers: {
-        						    	  "Content-Type" : "application/json"
-        						      },
-        						      data: requestJSON,
-        						      encode: true,
-        						    }).done(function (data) {
-        						      console.log(data);
-        						       if (data == "Commission Updated"){							       
-        						    	 $("#selectedValidationError").html('<div class="alert alert-success"><strong>Success!"'+data+'"</strong></div>');
-        						    	 window.location.reload();						    	    
-        							  } else if(data == "Scheme Already Exists"){
-        								  $("#selectedValidationError").html('<div class="alert alert-danger"><strong>Error! Scheme Already Exists ,change commission from commission list</strong></div>').show().delay(2000).fadeOut();
-        								  }  else if (data == "Commission amount exceeded please reduce"){
-        								  $("#selectedValidationError").html('<div class="alert alert-danger"><strong>Error! Commission amount exceeded please reduce</strong></div>').show().delay(2000).fadeOut();
-        								  } else {
-        							$("#selectedValidationError").html('<div class="alert alert-danger"><strong>Error! Issue while inserting</strong></div>').show().delay(2000).fadeOut();
-        							  }		 
-        						    });
-        						    event.preventDefault();
-  	  	  						}								
-      		  });
+      var operatorId;
+      $("#filter_operator_id").change(function(){
+			operatorId = $(this).val();
+			console.log(operatorId);
+			$('#commissionList').DataTable({
+				destroy: true,
+	      		pageLength : 10,
+	      		ajax : {
+	      			url : 'http://localhost:8081/getCommissionList/'+operatorId,
+	      			dataSrc : ''
+	      		},
+	      		columns : [ { 
+	                  title: 'Operator Name',
+	                  data : '2',
+	                  render: (data,type,row) => {	            	
+	      					return '<span id="operatorValue">'+data+'</span>';
+	                  }
+	               }, {
+	      			title : 'Api',
+	      			data : '4'
+	      		}, {
+	      			title : 'Commission',
+	      			data : '7',
+	      		    render: $.fn.dataTable.render.number(',', '.', 2)
+	      		}, {
+	      			title : 'Scheme Type',
+	      			data : '6'
+	      		},			
+	                 { 
+	      	            mData: '',
+	      	            data : '0',
+	      	            render: (data,type,row) => {		          
+	      	              return '<a id = "commissionEdit" data-toggle="modal" data-target="#myModal"  class = "btn"><i class="fa fa-edit"></i><span style = "display:none">'+data+'</span></a>';
+	      	            }
+	      	         }
+	      		]
+	      		
+	      	});
+			 $('#commissionList').on('click', '#commissionEdit', function(){
+	      	        var commissionEditValue = $(this).text();
+	      	 		var operatorId;
+	      	 		var schemeId;
+	      	 		var rechargeApiId;
+	      	 		var commission;
+	      	 		$.get("http://localhost:8081/getCommissionListById/"+commissionEditValue, function(data, status){
+	            		console.log(data);
+	            		for(var key in data){
+	      	      		keyData = data[key];
+	      	      		for( value in keyData){
+	      		      		commissionId = commissionEditValue;
+	      		      		operatorId = keyData[1];
+	      	      			rechargeApiId = keyData[3];
+	      	      		    schemeId = keyData[5];
+	      	      		    commissionAmount = keyData[7];
+	      		      		}	      			
+	      	      		}      
+	            		$("#selected_commission_id").val(commissionId);
+	            		$("#selected_operator_id").val(operatorId).attr('disabled','disabled');		
+	            		$("#selected_scheme_id").val(schemeId).attr('disabled','disabled');		      			
+	      	        $("#selected_recharge_api_id").val(rechargeApiId).attr('disabled','disabled');	
+	      	        $("#selected_commission").val(commissionAmount);		
+	      	});
+	      	});	
+	      		$("#closeModal").click(function(){
+	      			$("#customModal").hide();
+	      			});
+	      
+	      		$("#updateCommission").click(function (event) {
+	      					var status = $("#status").val();
+	      					if(status == "Active"){
+	      						status = "Y";
+	      						}
+	      					else
+	      						{
+	      							status = "N";
+	      						}
+	  						if($("#selected_scheme_id").val() == null){
+	  						  $("#selectedValidationError").html('<div class="alert alert-danger"><strong>Error!Admin Commission cannot be edited </strong></div>').show().delay(2000).fadeOut();
+	  	  						} else {
+	  	  						var formData = {
+	        							  commissionId: $("#selected_commission_id").val(),
+	        		                      operatorId: $("#selected_operator_id").val(),							 
+	        						      rechargeApiId: $("#selected_recharge_api_id").val(),
+	        						      schemeId: $("#selected_scheme_id").val(),
+	        						      commissionAmount:  $("#selected_commission").val()					      
+	        						    };
+	        							var requestJSON = JSON.stringify(formData);
+	        							console.log(requestJSON);
+	        						    $.ajax({
+	        						      type: "POST",
+	        						      url: "http://localhost:8081/commissionApi/updateCommission",
+	        						      headers: {
+	        						    	  "Content-Type" : "application/json"
+	        						      },
+	        						      data: requestJSON,
+	        						      encode: true,
+	        						    }).done(function (data) {
+	        						      console.log(data);
+	        						       if (data == "Commission Updated"){							       
+	        						    	 $("#selectedValidationError").html('<div class="alert alert-success"><strong>Success!"'+data+'"</strong></div>');
+	        						    	 window.location.reload();						    	    
+	        							  } else if(data == "Scheme Already Exists"){
+	        								  $("#selectedValidationError").html('<div class="alert alert-danger"><strong>Error! Scheme Already Exists ,change commission from commission list</strong></div>').show().delay(2000).fadeOut();
+	        								  }  else if (data == "Commission amount exceeded please reduce"){
+	        								  $("#selectedValidationError").html('<div class="alert alert-danger"><strong>Error! Commission amount exceeded please reduce</strong></div>').show().delay(2000).fadeOut();
+	        								  } else {
+	        							$("#selectedValidationError").html('<div class="alert alert-danger"><strong>Error! Issue while inserting</strong></div>').show().delay(2000).fadeOut();
+	        							  }		 
+	        						    });
+	        						    event.preventDefault();
+	  	  	  						}								
+	      		  });	
+          });
       	});
       
       
